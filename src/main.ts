@@ -7,51 +7,30 @@ export async function run(): Promise<void> {
   try {
     const accessToken = core.getInput('github-token')
     const close_count = parseInt(core.getInput('close_count'))
-    log(JSON.stringify(context))
     const prNumber = context.payload.pull_request?.number
     const owner = context.payload.repository?.owner.login!
-    const repo = context.payload.repository?.name!
-    log(`PR Number: ${prNumber}`)
-    log(`Owner: ${owner}`)
-    log(`Repo: ${repo}`)
-
+    const name = context.payload.repository?.name!
     if (!prNumber) {
       core.setFailed('No PR number found')
       return
     }
 
     const client = getOctokit(accessToken)
-    let payload = `
-    {
-      repository(owner: "${owner}", name: "${repo}") {
-        pullRequest(number: ${prNumber}) {
-          closingIssuesReferences(first: ${close_count}) {
-            nodes {
-              number
-            }
-          }
-        }
-      }
-    }
-    `
-
-    log(payload)
 
     const result = await client.graphql<GraphQlQueryResponseData>({
-      query: `{
-        repository(owner: $owner, name: $repo) {
-            pullRequest(number: $number) {
-                closingIssuesReferences(first: $first) {
+      query: `
+        query repository($owner: String!, name: String!) {
+            pullRequest($number: Int!) {
+                closingIssuesReferences($first: Int!) {
                     nodes {
                         number
                     }
                 }
             }
         }
-      }
       `,
       owner: owner,
-      repo: repo,
+      name: name,
       number: prNumber,
       first: close_count,
       headers: {
@@ -67,7 +46,7 @@ export async function run(): Promise<void> {
       log(`Closing issue ${issueNumber}`)
       await client.rest.issues.update({
         owner,
-        repo,
+        repo: name,
         issue_number: issueNumber,
         state: 'closed'
       })

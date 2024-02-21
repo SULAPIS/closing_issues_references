@@ -28966,47 +28966,28 @@ async function run() {
     try {
         const accessToken = core.getInput('github-token');
         const close_count = parseInt(core.getInput('close_count'));
-        (0, console_1.log)(JSON.stringify(github_1.context));
         const prNumber = github_1.context.payload.pull_request?.number;
         const owner = github_1.context.payload.repository?.owner.login;
-        const repo = github_1.context.payload.repository?.name;
-        (0, console_1.log)(`PR Number: ${prNumber}`);
-        (0, console_1.log)(`Owner: ${owner}`);
-        (0, console_1.log)(`Repo: ${repo}`);
+        const name = github_1.context.payload.repository?.name;
         if (!prNumber) {
             core.setFailed('No PR number found');
             return;
         }
         const client = (0, github_1.getOctokit)(accessToken);
-        let payload = `
-    {
-      repository(owner: "${owner}", name: "${repo}") {
-        pullRequest(number: ${prNumber}) {
-          closingIssuesReferences(first: ${close_count}) {
-            nodes {
-              number
-            }
-          }
-        }
-      }
-    }
-    `;
-        (0, console_1.log)(payload);
         const result = await client.graphql({
-            query: `{
-        repository(owner: $owner, name: $repo) {
-            pullRequest(number: $number) {
-                closingIssuesReferences(first: $first) {
+            query: `
+        query repository($owner: String!, name: String!) {
+            pullRequest($number: Int!) {
+                closingIssuesReferences($first: Int!) {
                     nodes {
                         number
                     }
                 }
             }
         }
-      }
       `,
             owner: owner,
-            repo: repo,
+            name: name,
             number: prNumber,
             first: close_count,
             headers: {
@@ -29020,7 +29001,7 @@ async function run() {
             (0, console_1.log)(`Closing issue ${issueNumber}`);
             await client.rest.issues.update({
                 owner,
-                repo,
+                repo: name,
                 issue_number: issueNumber,
                 state: 'closed'
             });
