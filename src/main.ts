@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import { context, getOctokit } from '@actions/github'
 import type { GraphQlQueryResponseData } from '@octokit/graphql'
+import { log } from 'console'
 
 export async function run(): Promise<void> {
   try {
@@ -31,11 +32,13 @@ export async function run(): Promise<void> {
       }
       `
     )
+    log(JSON.stringify(result))
     const closingIssues =
       result.repository.pullRequest.closingIssuesReferences.nodes
 
     for (const issue of closingIssues) {
       const issueNumber: number = issue.number
+      log(`Closing issue ${issueNumber}`)
       await client.rest.issues.update({
         owner,
         repo,
