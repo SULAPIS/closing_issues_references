@@ -28961,6 +28961,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const github_1 = __nccwpck_require__(5438);
+const console_1 = __nccwpck_require__(6206);
 async function run() {
     try {
         const accessToken = core.getInput('github-token');
@@ -28985,9 +28986,11 @@ async function run() {
         }
       }
       `);
+        (0, console_1.log)(JSON.stringify(result));
         const closingIssues = result.repository.pullRequest.closingIssuesReferences.nodes;
         for (const issue of closingIssues) {
             const issueNumber = issue.number;
+            (0, console_1.log)(`Closing issue ${issueNumber}`);
             await client.rest.issues.update({
                 owner,
                 repo,
