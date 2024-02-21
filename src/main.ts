@@ -1,26 +1,49 @@
-import * as core from '@actions/core'
-import { wait } from './wait'
+import * as core from '@actions/core';
+import { context, getOctokit } from '@actions/github';
+import type { GraphQlQueryResponseData } from "@octokit/graphql";
 
-/**
- * The main function for the action.
- * @returns {Promise<void>} Resolves when the action is complete.
- */
 export async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
+    const accessToken = core.getInput('access-token');
+    const close_count = parseInt(core.getInput('close_count'));
+    const prNumber = context.payload.pull_request?.number;
+    const owner = context.repo.owner;
+    const repo = context.repo.repo;
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    if (!prNumber) {
+      core.setFailed('No PR number found');
+      return;
+    }
 
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const client = getOctokit(accessToken);
 
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
+    const result = await client.graphql<GraphQlQueryResponseData>(
+      `{
+        repository(owner: "${owner}", name: "${repo}") {
+            pullRequest(number: ${prNumber}) {
+                closingIssuesReferences(first: ${close_count}) {
+                    nodes {
+                        number
+                    }
+                }
+            }
+        }
+      }
+      `
+    );
+    const closingIssues = result.repository.pullRequest.closingIssuesReferences.nodes;
+
+    for (const issue of closingIssues) {
+      const issueNumber: number = issue.number;
+      await client.rest.issues.update({
+        owner,
+        repo,
+        issue_number: issueNumber,
+        state: 'closed'
+      });
+    }
+
   } catch (error) {
-    // Fail the workflow run if an error occurs
     if (error instanceof Error) core.setFailed(error.message)
   }
 }
