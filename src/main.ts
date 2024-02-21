@@ -7,6 +7,8 @@ export async function run(): Promise<void> {
   try {
     const accessToken = core.getInput('github-token')
     const close_count = parseInt(core.getInput('close-count'))
+    log(`Closing ${close_count} issues`)
+    log('token: ' + accessToken)
     const prNumber = context.payload.pull_request?.number
     const owner = context.payload.repository?.owner.login!
     const name = context.payload.repository?.name!
@@ -34,7 +36,7 @@ export async function run(): Promise<void> {
       number: prNumber,
       first: close_count,
       headers: {
-        authorization: `token ${accessToken}`
+        authorization: `Bearer ${accessToken}`
       }
     })
     log(JSON.stringify(result))

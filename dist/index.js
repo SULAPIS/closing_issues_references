@@ -28966,6 +28966,8 @@ async function run() {
     try {
         const accessToken = core.getInput('github-token');
         const close_count = parseInt(core.getInput('close-count'));
+        (0, console_1.log)(`Closing ${close_count} issues`);
+        (0, console_1.log)('token: ' + accessToken);
         const prNumber = github_1.context.payload.pull_request?.number;
         const owner = github_1.context.payload.repository?.owner.login;
         const name = github_1.context.payload.repository?.name;
@@ -28991,7 +28993,7 @@ async function run() {
             number: prNumber,
             first: close_count,
             headers: {
-                authorization: `token ${accessToken}`
+                authorization: `Bearer ${accessToken}`
             }
         });
         (0, console_1.log)(JSON.stringify(result));
