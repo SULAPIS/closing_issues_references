@@ -28965,7 +28965,7 @@ const console_1 = __nccwpck_require__(6206);
 async function run() {
     try {
         const accessToken = core.getInput('github-token');
-        const close_count = parseInt(core.getInput('close_count'));
+        const close_count = parseInt(core.getInput('close-count'));
         const prNumber = github_1.context.payload.pull_request?.number;
         const owner = github_1.context.payload.repository?.owner.login;
         const name = github_1.context.payload.repository?.name;

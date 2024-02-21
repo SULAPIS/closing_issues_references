@@ -6,7 +6,7 @@ import { log } from 'console'
 export async function run(): Promise<void> {
   try {
     const accessToken = core.getInput('github-token')
-    const close_count = parseInt(core.getInput('close_count'))
+    const close_count = parseInt(core.getInput('close-count'))
     const prNumber = context.payload.pull_request?.number
     const owner = context.payload.repository?.owner.login!
     const name = context.payload.repository?.name!
