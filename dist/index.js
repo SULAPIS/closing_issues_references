@@ -28961,13 +28961,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const github_1 = __nccwpck_require__(5438);
-const console_1 = __nccwpck_require__(6206);
 async function run() {
     try {
         const accessToken = core.getInput('github-token');
         const close_count = parseInt(core.getInput('close-count'));
-        (0, console_1.log)(`Closing ${close_count} issues`);
-        (0, console_1.log)('token: ' + accessToken);
         const prNumber = github_1.context.payload.pull_request?.number;
         const owner = github_1.context.payload.repository?.owner.login;
         const name = github_1.context.payload.repository?.name;
@@ -28976,27 +28973,26 @@ async function run() {
             return;
         }
         const client = (0, github_1.getOctokit)(accessToken);
-        const { repository } = await client.graphql(`{
-        repository(owner: "SULAPIS", name: "tagtest") {
-          pullRequest(number: 46) {
-            closingIssuesReferences(first: 5) {
-              nodes {
-                number
-              }
+        const { repository } = await client.graphql({
+            query: `query closingIssues($owner: String!, $name: String!, $number: Int!, $first: Int) {
+        repository(owner: $owner, name: $name) {
+            pullRequest(number: $number) {
+                closingIssuesReferences(first: $first) {
+                    nodes {
+                        number
+                    }
+                }
             }
-          }
         }
-      }`
-        // owner: owner,
-        // name: name,
-        // number: prNumber,
-        // first: close_count
-        );
-        (0, console_1.log)(JSON.stringify(repository));
+      }`,
+            owner: owner,
+            name: name,
+            number: prNumber,
+            first: close_count
+        });
         const closingIssues = repository.pullRequest.closingIssuesReferences.nodes;
         for (const issue of closingIssues) {
             const issueNumber = issue.number;
-            (0, console_1.log)(`Closing issue ${issueNumber}`);
             await client.rest.issues.update({
                 owner,
                 repo: name,

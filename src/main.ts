@@ -1,14 +1,11 @@
 import * as core from '@actions/core'
 import { context, getOctokit } from '@actions/github'
 import type { GraphQlQueryResponseData } from '@octokit/graphql'
-import { log } from 'console'
 
 export async function run(): Promise<void> {
   try {
     const accessToken = core.getInput('github-token')
     const close_count = parseInt(core.getInput('close-count'))
-    log(`Closing ${close_count} issues`)
-    log('token: ' + accessToken)
     const prNumber = context.payload.pull_request?.number
     const owner = context.payload.repository?.owner.login!
     const name = context.payload.repository?.name!
@@ -19,29 +16,28 @@ export async function run(): Promise<void> {
 
     const client = getOctokit(accessToken)
 
-    const { repository } = await client.graphql<GraphQlQueryResponseData>(
-      `{
-        repository(owner: "SULAPIS", name: "tagtest") {
-          pullRequest(number: 46) {
-            closingIssuesReferences(first: 5) {
-              nodes {
-                number
-              }
+    const { repository } = await client.graphql<GraphQlQueryResponseData>({
+      query: `query closingIssues($owner: String!, $name: String!, $number: Int!, $first: Int) {
+        repository(owner: $owner, name: $name) {
+            pullRequest(number: $number) {
+                closingIssuesReferences(first: $first) {
+                    nodes {
+                        number
+                    }
+                }
             }
-          }
         }
-      }`
-      // owner: owner,
-      // name: name,
-      // number: prNumber,
-      // first: close_count
-    )
-    log(JSON.stringify(repository))
+      }`,
+      owner: owner,
+      name: name,
+      number: prNumber,
+      first: close_count
+    })
+
     const closingIssues = repository.pullRequest.closingIssuesReferences.nodes
 
     for (const issue of closingIssues) {
       const issueNumber: number = issue.number
-      log(`Closing issue ${issueNumber}`)
       await client.rest.issues.update({
         owner,
         repo: name,
