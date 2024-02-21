@@ -37,8 +37,8 @@ export async function run(): Promise<void> {
 
     log(payload)
 
-    const result = await client.graphql<GraphQlQueryResponseData>(
-      `{
+    const result = await client.graphql<GraphQlQueryResponseData>({
+      query: `{
         repository(owner: $owner, name: $repo) {
             pullRequest(number: $number) {
                 closingIssuesReferences(first: $first) {
@@ -50,16 +50,14 @@ export async function run(): Promise<void> {
         }
       }
       `,
-      {
-        owner: owner,
-        repo: repo,
-        number: prNumber,
-        first: close_count,
-        headers: {
-          authorization: `token ${accessToken}`
-        }
+      owner: owner,
+      repo: repo,
+      number: prNumber,
+      first: close_count,
+      headers: {
+        authorization: `token ${accessToken}`
       }
-    )
+    })
     log(JSON.stringify(result))
     const closingIssues =
       result.repository.pullRequest.closingIssuesReferences.nodes

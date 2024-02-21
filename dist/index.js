@@ -28992,7 +28992,8 @@ async function run() {
     }
     `;
         (0, console_1.log)(payload);
-        const result = await client.graphql(`{
+        const result = await client.graphql({
+            query: `{
         repository(owner: $owner, name: $repo) {
             pullRequest(number: $number) {
                 closingIssuesReferences(first: $first) {
@@ -29003,7 +29004,7 @@ async function run() {
             }
         }
       }
-      `, {
+      `,
             owner: owner,
             repo: repo,
             number: prNumber,
