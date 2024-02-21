@@ -28970,6 +28970,9 @@ async function run() {
         const prNumber = github_1.context.payload.pull_request?.number;
         const owner = github_1.context.payload.repository?.owner.login;
         const repo = github_1.context.payload.repository?.name;
+        (0, console_1.log)(`PR Number: ${prNumber}`);
+        (0, console_1.log)(`Owner: ${owner}`);
+        (0, console_1.log)(`Repo: ${repo}`);
         if (!prNumber) {
             core.setFailed('No PR number found');
             return;

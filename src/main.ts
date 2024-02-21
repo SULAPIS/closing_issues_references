@@ -11,6 +11,9 @@ export async function run(): Promise<void> {
     const prNumber = context.payload.pull_request?.number
     const owner = context.payload.repository?.owner.login!
     const repo = context.payload.repository?.name!
+    log(`PR Number: ${prNumber}`)
+    log(`Owner: ${owner}`)
+    log(`Repo: ${repo}`)
 
     if (!prNumber) {
       core.setFailed('No PR number found')
