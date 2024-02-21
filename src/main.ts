@@ -21,7 +21,7 @@ export async function run(): Promise<void> {
       query: `
         query repository($owner: String!, $name: String!) {
             pullRequest($number: Int!) {
-                closingIssuesReferences($first: Int!) {
+                closingIssuesReferences($first: Int) {
                     nodes {
                         number
                     }

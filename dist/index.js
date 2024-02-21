@@ -28978,7 +28978,7 @@ async function run() {
             query: `
         query repository($owner: String!, $name: String!) {
             pullRequest($number: Int!) {
-                closingIssuesReferences($first: Int!) {
+                closingIssuesReferences($first: Int) {
                     nodes {
                         number
                     }
