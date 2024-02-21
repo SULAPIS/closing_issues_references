@@ -28976,7 +28976,7 @@ async function run() {
             return;
         }
         const client = (0, github_1.getOctokit)(accessToken);
-        const { result } = await client.graphql({
+        const { repository } = await client.graphql({
             query: `query closingIssues($owner: String!, $name: String!, $number: Int!, $first: Int) {
         repository(owner: $owner, name: $name) {
             pullRequest(number: $number) {
@@ -28991,13 +28991,10 @@ async function run() {
             owner: owner,
             name: name,
             number: prNumber,
-            first: close_count,
-            headers: {
-                authorization: `Bearer ${accessToken}`
-            }
+            first: close_count
         });
-        (0, console_1.log)(JSON.stringify(result));
-        const closingIssues = result.repository.pullRequest.closingIssuesReferences.nodes;
+        (0, console_1.log)(JSON.stringify(repository));
+        const closingIssues = repository.pullRequest.closingIssuesReferences.nodes;
         for (const issue of closingIssues) {
             const issueNumber = issue.number;
             (0, console_1.log)(`Closing issue ${issueNumber}`);

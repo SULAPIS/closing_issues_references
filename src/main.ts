@@ -19,7 +19,7 @@ export async function run(): Promise<void> {
 
     const client = getOctokit(accessToken)
 
-    const { result } = await client.graphql<GraphQlQueryResponseData>({
+    const { repository } = await client.graphql<GraphQlQueryResponseData>({
       query: `query closingIssues($owner: String!, $name: String!, $number: Int!, $first: Int) {
         repository(owner: $owner, name: $name) {
             pullRequest(number: $number) {
@@ -34,14 +34,10 @@ export async function run(): Promise<void> {
       owner: owner,
       name: name,
       number: prNumber,
-      first: close_count,
-      headers: {
-        authorization: `Bearer ${accessToken}`
-      }
+      first: close_count
     })
-    log(JSON.stringify(result))
-    const closingIssues =
-      result.repository.pullRequest.closingIssuesReferences.nodes
+    log(JSON.stringify(repository))
+    const closingIssues = repository.pullRequest.closingIssuesReferences.nodes
 
     for (const issue of closingIssues) {
       const issueNumber: number = issue.number
