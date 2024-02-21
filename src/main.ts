@@ -6,7 +6,7 @@ import { log } from 'console'
 export async function run(): Promise<void> {
   try {
     const accessToken = core.getInput('github-token')
-    const close_count = parseInt(core.getInput('close-count'))
+    const close_count = parseInt(core.getInput('close_count'))
     log(JSON.stringify(context))
     const prNumber = context.payload.pull_request?.number
     const owner = context.payload.repository?.owner.login!
@@ -39,9 +39,9 @@ export async function run(): Promise<void> {
 
     const result = await client.graphql<GraphQlQueryResponseData>(
       `{
-        repository(owner: "${owner}", name: "${repo}") {
-            pullRequest(number: ${prNumber}) {
-                closingIssuesReferences(first: ${close_count}) {
+        repository(owner: $owner, name: $repo) {
+            pullRequest(number: $number) {
+                closingIssuesReferences(first: $first) {
                     nodes {
                         number
                     }
@@ -49,7 +49,16 @@ export async function run(): Promise<void> {
             }
         }
       }
-      `
+      `,
+      {
+        owner: owner,
+        repo: repo,
+        number: prNumber,
+        first: close_count,
+        headers: {
+          authorization: `token ${accessToken}`
+        }
+      }
     )
     log(JSON.stringify(result))
     const closingIssues =

@@ -28965,7 +28965,7 @@ const console_1 = __nccwpck_require__(6206);
 async function run() {
     try {
         const accessToken = core.getInput('github-token');
-        const close_count = parseInt(core.getInput('close-count'));
+        const close_count = parseInt(core.getInput('close_count'));
         (0, console_1.log)(JSON.stringify(github_1.context));
         const prNumber = github_1.context.payload.pull_request?.number;
         const owner = github_1.context.payload.repository?.owner.login;
@@ -28993,9 +28993,9 @@ async function run() {
     `;
         (0, console_1.log)(payload);
         const result = await client.graphql(`{
-        repository(owner: "${owner}", name: "${repo}") {
-            pullRequest(number: ${prNumber}) {
-                closingIssuesReferences(first: ${close_count}) {
+        repository(owner: $owner, name: $repo) {
+            pullRequest(number: $number) {
+                closingIssuesReferences(first: $first) {
                     nodes {
                         number
                     }
@@ -29003,7 +29003,15 @@ async function run() {
             }
         }
       }
-      `);
+      `, {
+            owner: owner,
+            repo: repo,
+            number: prNumber,
+            first: close_count,
+            headers: {
+                authorization: `token ${accessToken}`
+            }
+        });
         (0, console_1.log)(JSON.stringify(result));
         const closingIssues = result.repository.pullRequest.closingIssuesReferences.nodes;
         for (const issue of closingIssues) {
