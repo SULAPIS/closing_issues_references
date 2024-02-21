@@ -12,8 +12,8 @@ inputs:
   github-token:
     description: "The GitHub token to use"
     default: ${{ github.token }}
-  issues-per_run:
-    description: "The number of issues to close per run"
+  close-count:
+    description: "The number of issues to close"
     default: "5"
 
 runs:
