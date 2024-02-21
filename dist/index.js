@@ -28978,6 +28978,20 @@ async function run() {
             return;
         }
         const client = (0, github_1.getOctokit)(accessToken);
+        let payload = `
+    {
+      repository(owner: "${owner}", name: "${repo}") {
+        pullRequest(number: ${prNumber}) {
+          closingIssuesReferences(first: ${close_count}) {
+            nodes {
+              number
+            }
+          }
+        }
+      }
+    }
+    `;
+        (0, console_1.log)(payload);
         const result = await client.graphql(`{
         repository(owner: "${owner}", name: "${repo}") {
             pullRequest(number: ${prNumber}) {

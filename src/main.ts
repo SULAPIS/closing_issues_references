@@ -21,6 +21,21 @@ export async function run(): Promise<void> {
     }
 
     const client = getOctokit(accessToken)
+    let payload = `
+    {
+      repository(owner: "${owner}", name: "${repo}") {
+        pullRequest(number: ${prNumber}) {
+          closingIssuesReferences(first: ${close_count}) {
+            nodes {
+              number
+            }
+          }
+        }
+      }
+    }
+    `
+
+    log(payload)
 
     const result = await client.graphql<GraphQlQueryResponseData>(
       `{
