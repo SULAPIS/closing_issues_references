@@ -28963,8 +28963,8 @@ const core = __importStar(__nccwpck_require__(2186));
 const github_1 = __nccwpck_require__(5438);
 async function run() {
     try {
-        const accessToken = core.getInput('access-token');
-        const close_count = parseInt(core.getInput('close_count'));
+        const accessToken = core.getInput('github-token');
+        const close_count = parseInt(core.getInput('close-count'));
         const prNumber = github_1.context.payload.pull_request?.number;
         const owner = github_1.context.repo.owner;
         const repo = github_1.context.repo.repo;

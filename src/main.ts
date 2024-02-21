@@ -4,8 +4,8 @@ import type { GraphQlQueryResponseData } from '@octokit/graphql'
 
 export async function run(): Promise<void> {
   try {
-    const accessToken = core.getInput('access-token')
-    const close_count = parseInt(core.getInput('close_count'))
+    const accessToken = core.getInput('github-token')
+    const close_count = parseInt(core.getInput('close-count'))
     const prNumber = context.payload.pull_request?.number
     const owner = context.repo.owner
     const repo = context.repo.repo
