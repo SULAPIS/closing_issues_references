@@ -21,14 +21,14 @@ export async function run(): Promise<void> {
 
     const { repository } = await client.graphql<GraphQlQueryResponseData>({
       query: `query closingIssues($owner: String!, $name: String!, $number: Int!, $first: Int) {
-        repository(owner: $owner, name: $name) {
-            pullRequest(number: $number) {
-                closingIssuesReferences(first: $first) {
-                    nodes {
-                        number
-                    }
-                }
+        repository(owner: "SULAPIS", name: "tagtest") {
+          pullRequest(number: 46) {
+            closingIssuesReferences(first: 5) {
+              nodes {
+                number
+              }
             }
+          }
         }
       }`,
       owner: owner,
