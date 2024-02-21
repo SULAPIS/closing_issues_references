@@ -20,7 +20,7 @@ export async function run(): Promise<void> {
     const client = getOctokit(accessToken)
 
     const { repository } = await client.graphql<GraphQlQueryResponseData>(
-      `
+      `{
         repository(owner: "SULAPIS", name: "tagtest") {
           pullRequest(number: 46) {
             closingIssuesReferences(first: 5) {

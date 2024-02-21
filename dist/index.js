@@ -28976,7 +28976,7 @@ async function run() {
             return;
         }
         const client = (0, github_1.getOctokit)(accessToken);
-        const { repository } = await client.graphql(`
+        const { repository } = await client.graphql(`{
         repository(owner: "SULAPIS", name: "tagtest") {
           pullRequest(number: 46) {
             closingIssuesReferences(first: 5) {
