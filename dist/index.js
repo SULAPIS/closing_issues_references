@@ -28968,8 +28968,8 @@ async function run() {
         const close_count = parseInt(core.getInput('close-count'));
         (0, console_1.log)(JSON.stringify(github_1.context));
         const prNumber = github_1.context.payload.pull_request?.number;
-        const owner = github_1.context.repo.owner;
-        const repo = github_1.context.repo.repo;
+        const owner = github_1.context.payload.repository?.owner.login;
+        const repo = github_1.context.payload.repository?.name;
         if (!prNumber) {
             core.setFailed('No PR number found');
             return;

@@ -9,8 +9,8 @@ export async function run(): Promise<void> {
     const close_count = parseInt(core.getInput('close-count'))
     log(JSON.stringify(context))
     const prNumber = context.payload.pull_request?.number
-    const owner = context.repo.owner
-    const repo = context.repo.repo
+    const owner = context.payload.repository?.owner.login!
+    const repo = context.payload.repository?.name!
 
     if (!prNumber) {
       core.setFailed('No PR number found')
