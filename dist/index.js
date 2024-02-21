@@ -28966,6 +28966,7 @@ async function run() {
     try {
         const accessToken = core.getInput('github-token');
         const close_count = parseInt(core.getInput('close-count'));
+        (0, console_1.log)(JSON.stringify(github_1.context));
         const prNumber = github_1.context.payload.pull_request?.number;
         const owner = github_1.context.repo.owner;
         const repo = github_1.context.repo.repo;
