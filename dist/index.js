@@ -28976,7 +28976,7 @@ async function run() {
             return;
         }
         const client = (0, github_1.getOctokit)(accessToken);
-        const result = await client.graphql({
+        const { result } = await client.graphql({
             query: `query closingIssues($owner: String!, $name: String!, $number: Int!, $first: Int) {
         repository(owner: $owner, name: $name) {
             pullRequest(number: $number) {
